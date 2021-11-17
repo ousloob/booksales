@@ -17,6 +17,7 @@ func TestBook(t *testing.T) {
 	t.Parallel()
 
 	_ = bookstore.Book{
+		ID:     1,
 		Title:  "The Witcher: The Last Wish",
 		Author: "Andrzej Sapkowski",
 		Copies: 3,
@@ -33,6 +34,7 @@ func TestBuy(t *testing.T) {
 	// }
 
 	b := bookstore.Book{
+		ID:     9,
 		Title:  "The Lord of the Rings",
 		Author: "J. R. R. Tolkien",
 		Copies: 2,
@@ -56,6 +58,7 @@ func TestBuyErrorsIfNoCopiesLeft(t *testing.T) {
 	t.Parallel()
 
 	b := bookstore.Book{
+		ID:     13,
 		Title:  "Dragon Age: Asunder",
 		Author: "David Gaider",
 		Copies: 0,
@@ -86,5 +89,25 @@ func TestGetAllBooks(t *testing.T) {
 
 	if !cmp.Equal(want, got) {
 		t.Error((cmp.Diff(want, got)))
+	}
+}
+
+func TestGetBook(t *testing.T) {
+	t.Parallel()
+
+	catalog := []bookstore.Book{
+		{ID: 2, Title: "The Witcher: Sword of Destiny"},
+		{ID: 3, Title: "The Witcher: Season of Storms"},
+	}
+
+	want := bookstore.Book{
+		ID:    3,
+		Title: "The Witcher: Season of Storms",
+	}
+
+	got := bookstore.GetBook(catalog, 3)
+
+	if !cmp.Equal(want, got) {
+		t.Error(cmp.Diff(want, got))
 	}
 }
