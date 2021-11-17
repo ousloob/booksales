@@ -3,6 +3,8 @@ package bookstore_test
 import (
 	"booklib/internal/bookstore"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 // type testCases struct {
@@ -24,6 +26,7 @@ func TestBook(t *testing.T) {
 func TestBuy(t *testing.T) {
 	t.Parallel()
 
+	// TODO: manage a slice of test cases.
 	// tcs := []testCases{
 	// 	{bookstore.Book{Title: "The Lord of the Rings", Author: "J. R. R. Tolkien", Copies: 3}, 3, 2},
 	// 	{bookstore.Book{Title: "Dragon Age: Asunder", Author: "David Gaider", Copies: 0}, 0, 0},
@@ -36,11 +39,52 @@ func TestBuy(t *testing.T) {
 	}
 
 	want := 1
-	result := bookstore.Buy(b)
+	result, err := bookstore.Buy(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	got := result.Copies
 
 	if want != got {
 		t.Errorf("want %d copies after buying one copy from a stock of 2, got %d", want, got)
 	}
 
+}
+
+func TestBuyErrorsIfNoCopiesLeft(t *testing.T) {
+	t.Parallel()
+
+	b := bookstore.Book{
+		Title:  "Dragon Age: Asunder",
+		Author: "David Gaider",
+		Copies: 0,
+	}
+
+	_, err := bookstore.Buy(b)
+	if err == nil {
+		t.Errorf("want error buying book when zero copies left, but got nil")
+	}
+}
+
+func TestGetAllBooks(t *testing.T) {
+	t.Parallel()
+
+	catalog := []bookstore.Book{
+		{Title: "One Piece"},
+		{Title: "The Promises Neverland"},
+		{Title: "Kimetsu No Yaiba"},
+	}
+
+	want := []bookstore.Book{
+		{Title: "One Piece"},
+		{Title: "The Promises Neverland"},
+		{Title: "Kimetsu No Yaiba"},
+	}
+
+	got := bookstore.GetAllBooks(catalog)
+
+	if !cmp.Equal(want, got) {
+		t.Error((cmp.Diff(want, got)))
+	}
 }
