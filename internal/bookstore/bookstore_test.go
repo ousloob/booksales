@@ -2,6 +2,7 @@ package bookstore_test
 
 import (
 	"booklib/internal/bookstore"
+	"sort"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -73,19 +74,22 @@ func TestBuyErrorsIfNoCopiesLeft(t *testing.T) {
 func TestGetAllBooks(t *testing.T) {
 	t.Parallel()
 
-	catalog := []bookstore.Book{
-		{Title: "One Piece"},
-		{Title: "The Promises Neverland"},
-		{Title: "Kimetsu No Yaiba"},
+	catalog := map[int]bookstore.Book{
+		33: {ID: 33, Title: "One Piece"},
+		34: {ID: 34, Title: "The Promises Neverland"},
+		35: {ID: 35, Title: "Kimetsu No Yaiba"},
 	}
 
 	want := []bookstore.Book{
-		{Title: "One Piece"},
-		{Title: "The Promises Neverland"},
-		{Title: "Kimetsu No Yaiba"},
+		{ID: 33, Title: "One Piece"},
+		{ID: 34, Title: "The Promises Neverland"},
+		{ID: 35, Title: "Kimetsu No Yaiba"},
 	}
 
 	got := bookstore.GetAllBooks(catalog)
+	sort.Slice(got, func(i, j int) bool {
+		return got[i].ID < got[j].ID
+	})
 
 	if !cmp.Equal(want, got) {
 		t.Error((cmp.Diff(want, got)))
@@ -95,9 +99,9 @@ func TestGetAllBooks(t *testing.T) {
 func TestGetBook(t *testing.T) {
 	t.Parallel()
 
-	catalog := []bookstore.Book{
-		{ID: 2, Title: "The Witcher: Sword of Destiny"},
-		{ID: 3, Title: "The Witcher: Season of Storms"},
+	catalog := map[int]bookstore.Book{
+		2: {ID: 2, Title: "The Witcher: Sword of Destiny"},
+		3: {ID: 3, Title: "The Witcher: Season of Storms"},
 	}
 
 	want := bookstore.Book{
@@ -105,9 +109,21 @@ func TestGetBook(t *testing.T) {
 		Title: "The Witcher: Season of Storms",
 	}
 
-	got := bookstore.GetBook(catalog, 3)
+	got, err := bookstore.GetBook(catalog, 3)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if !cmp.Equal(want, got) {
 		t.Error(cmp.Diff(want, got))
+	}
+}
+
+func TestGetBookBadIDReturnsError(t *testing.T) {
+	catalog := map[int]bookstore.Book{}
+
+	_, err := bookstore.GetBook(catalog, 999)
+	if err == nil {
+		t.Fatal("want error for non-esistent ID, got nil")
 	}
 }
