@@ -8,10 +8,12 @@ import (
 
 // Book represents information about a book.
 type Book struct {
-	ID     int
-	Title  string
-	Author string
-	Copies int
+	ID              int
+	Title           string
+	Author          string
+	Copies          int
+	PriceCents      int
+	DiscountPercent int
 }
 
 // Buy diminush the number of copies of a book if it's available.
@@ -41,4 +43,9 @@ func GetBook(catalog map[int]Book, ID int) (Book, error) {
 	}
 
 	return b, nil
+}
+
+func (b Book) NetPriceCents() int {
+	saving := b.PriceCents * b.DiscountPercent / 100
+	return b.PriceCents - saving
 }

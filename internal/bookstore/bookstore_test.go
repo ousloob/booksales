@@ -127,3 +127,18 @@ func TestGetBookBadIDReturnsError(t *testing.T) {
 		t.Fatal("want error for non-esistent ID, got nil")
 	}
 }
+
+func TestNetPriceCents(t *testing.T) {
+	book := bookstore.Book{
+		Title:           "The Witcher: Blood of Elves",
+		PriceCents:      5000,
+		DiscountPercent: 25,
+	}
+
+	want := 3750
+	got := book.NetPriceCents()
+
+	if want != got {
+		t.Errorf("with price %d, after %d%% discount want net %d, got %d", book.PriceCents, book.DiscountPercent, want, got)
+	}
+}
