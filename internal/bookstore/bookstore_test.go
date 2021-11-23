@@ -2,16 +2,11 @@ package bookstore_test
 
 import (
 	"booklib/internal/bookstore"
+	"sort"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
-
-// type testCases struct {
-// 	book bookstore.Book
-// 	got  int
-// 	want int
-// }
 
 func TestBook(t *testing.T) {
 	t.Parallel()
@@ -68,21 +63,22 @@ func TestGetAllBooks(t *testing.T) {
 	t.Parallel()
 
 	c := bookstore.Catalog{
-		33: {ID: 33, Title: "One Piece"},
-		34: {ID: 34, Title: "The Promises Neverland"},
-		35: {ID: 35, Title: "Kimetsu No Yaiba"},
+		33: {ID: 33, Title: "Kimetsu No Yaiba"},
+		34: {ID: 34, Title: "One Piece"},
+		35: {ID: 35, Title: "The Promises Neverland"},
 	}
 
 	want := []bookstore.Book{
-		{ID: 33, Title: "One Piece"},
-		{ID: 34, Title: "The Promises Neverland"},
-		{ID: 35, Title: "Kimetsu No Yaiba"},
+		{ID: 33, Title: "Kimetsu No Yaiba"},
+		{ID: 34, Title: "One Piece"},
+		{ID: 35, Title: "The Promises Neverland"},
 	}
 
 	got := c.GetAllBooks()
+	sort.Slice(got, func(i, j int) bool { return got[i].ID < got[j].ID })
 
-	if !cmp.Equal(want, got) {
-		t.Error((cmp.Diff(want, got)))
+	if !cmp.Equal(want, got, cmp.AllowUnexported(bookstore.Book{})) {
+		t.Error((cmp.Diff(want, got, cmp.AllowUnexported(bookstore.Book{}))))
 	}
 }
 
@@ -104,8 +100,8 @@ func TestGetBook(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if !cmp.Equal(want, got) {
-		t.Error(cmp.Diff(want, got))
+	if !cmp.Equal(want, got, cmp.AllowUnexported(bookstore.Book{})) {
+		t.Error(cmp.Diff(want, got, cmp.AllowUnexported(bookstore.Book{})))
 	}
 }
 
@@ -130,5 +126,63 @@ func TestNetPriceCents(t *testing.T) {
 
 	if want != got {
 		t.Errorf("with price %d, after %d%% discount want net %d, got %d", book.PriceCents, book.DiscountPercent, want, got)
+	}
+}
+
+func TestSetPriceCents(t *testing.T) {
+	t.Parallel()
+	b := bookstore.Book{
+		Title:      "The Witcher: Time of Contempt",
+		PriceCents: 325,
+	}
+	want := 5000
+	err := b.SetPriceCents(want)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := b.PriceCents
+
+	if want != got {
+		t.Errorf("want to update the price, want %d, got %d", want, got)
+	}
+}
+
+func TestSetPriceCentsInvalid(t *testing.T) {
+	t.Parallel()
+	b := bookstore.Book{
+		Title:      "The Witcher: Baptism of Fire",
+		PriceCents: 425,
+	}
+	err := b.SetPriceCents(-1)
+	if err == nil {
+		t.Errorf("want error setting invalid price -1, got nil")
+	}
+}
+
+func TestSetCategory(t *testing.T) {
+	t.Parallel()
+	b := bookstore.Book{
+		Title: "The Witcher: The Tower of the Swallow",
+	}
+	want := "Fantasy"
+	err := b.SetCategory(want)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := b.Category()
+	if want != got {
+		t.Errorf("want to update category, want %s, got %s", want, got)
+	}
+}
+
+func TestSetCategoryInvalid(t *testing.T) {
+	t.Parallel()
+	b := bookstore.Book{
+		Title: "The Witcher: The Tower of the Swallow",
+	}
+	err := b.SetCategory("game")
+	if err == nil {
+		t.Fatal("want error setting invalid category 'game', got nil")
 	}
 }

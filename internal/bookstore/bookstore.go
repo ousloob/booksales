@@ -6,6 +6,12 @@ import (
 	"fmt"
 )
 
+var validCategory = map[string]bool{
+	"Fantasy":     true,
+	"Manga":       true,
+	"Development": true,
+}
+
 // Book represents information about a book.
 type Book struct {
 	ID              int
@@ -14,6 +20,32 @@ type Book struct {
 	Copies          int
 	PriceCents      int
 	DiscountPercent int
+	category        string
+}
+
+// SetPriceCents updates the price of a book.
+func (b *Book) SetPriceCents(newPrice int) error {
+	if newPrice < 0 {
+		return fmt.Errorf("invalid price %d want a price superior of zero", newPrice)
+	}
+
+	b.PriceCents = newPrice
+	return nil
+}
+
+// SetCategory helps us to set a category.
+func (b *Book) SetCategory(category string) error {
+	if !validCategory[category] {
+		return fmt.Errorf("unknown category %q", category)
+	}
+
+	b.category = category
+	return nil
+}
+
+// Category return the category of a book.
+func (b Book) Category() string {
+	return b.category
 }
 
 // Catalog is a slice of Book.
