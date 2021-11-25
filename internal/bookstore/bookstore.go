@@ -6,10 +6,18 @@ import (
 	"fmt"
 )
 
-var validCategory = map[string]bool{
-	"Fantasy":     true,
-	"Manga":       true,
-	"Development": true,
+const (
+	CategoryFantasy Category = iota
+	CategoryManga
+	CategoryDevelopment
+)
+
+type Category int
+
+var validCategory = map[Category]bool{
+	CategoryFantasy:     true,
+	CategoryManga:       true,
+	CategoryDevelopment: true,
 }
 
 // Book represents information about a book.
@@ -20,7 +28,7 @@ type Book struct {
 	Copies          int
 	PriceCents      int
 	DiscountPercent int
-	category        string
+	category        Category
 }
 
 // SetPriceCents updates the price of a book.
@@ -34,17 +42,17 @@ func (b *Book) SetPriceCents(newPrice int) error {
 }
 
 // SetCategory helps us to set a category.
-func (b *Book) SetCategory(category string) error {
-	if !validCategory[category] {
-		return fmt.Errorf("unknown category %q", category)
+func (b *Book) SetCategory(ctg Category) error {
+	if !validCategory[ctg] {
+		return fmt.Errorf("unknown category %v", ctg)
 	}
 
-	b.category = category
+	b.category = ctg
 	return nil
 }
 
 // Category return the category of a book.
-func (b Book) Category() string {
+func (b Book) Category() Category {
 	return b.category
 }
 

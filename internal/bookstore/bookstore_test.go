@@ -165,14 +165,21 @@ func TestSetCategory(t *testing.T) {
 	b := bookstore.Book{
 		Title: "The Witcher: The Tower of the Swallow",
 	}
-	want := "Fantasy"
-	err := b.SetCategory(want)
-	if err != nil {
-		t.Fatal(err)
+	cats := []bookstore.Category{
+		bookstore.CategoryFantasy,
+		bookstore.CategoryManga,
+		bookstore.CategoryDevelopment,
 	}
-	got := b.Category()
-	if want != got {
-		t.Errorf("want to update category, want %s, got %s", want, got)
+
+	for _, cat := range cats {
+		err := b.SetCategory(cat)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := b.Category()
+		if cat != got {
+			t.Errorf("want to update category, want %q, got %q", cat, got)
+		}
 	}
 }
 
@@ -181,7 +188,7 @@ func TestSetCategoryInvalid(t *testing.T) {
 	b := bookstore.Book{
 		Title: "The Witcher: The Tower of the Swallow",
 	}
-	err := b.SetCategory("game")
+	err := b.SetCategory(999)
 	if err == nil {
 		t.Fatal("want error setting invalid category 'game', got nil")
 	}
