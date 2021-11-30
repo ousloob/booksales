@@ -1,0 +1,70 @@
+-- Database: book_data
+
+-- DROP DATABASE IF EXISTS book_data;
+
+CREATE DATABASE book_data
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'French_France.1252'
+    LC_CTYPE = 'French_France.1252'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+	
+-- Create authors table
+
+CREATE TABLE authors (
+
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR(30),
+	last_name VARCHAR(30) NOT NULL,
+	date_of_birth DATE,
+	nationality VARCHAR(20)
+);
+
+-- Create customers table
+
+CREATE TABLE customers (
+
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR(30),
+	last_name VARCHAR(30) NOT NULL,
+	email VARCHAR(30),
+	gender CHAR(1),
+	date_of_birth DATE
+);
+
+-- Create books table
+
+CREATE TABLE books (
+
+	id SERIAL PRIMARY KEY,
+	title VARCHAR(30) NOT NULL,
+	quantity INT,
+	release_date DATE,
+	author_id INT REFERENCES authors (id),
+	price NUMERIC(6,2),
+	category VARCHAR(20)
+);
+
+-- Create book_revenues table
+
+CREATE TABLE book_revenues (
+
+	id SERIAL PRIMARY KEY,
+	book_id INT REFERENCES books (id),
+	domestic_takings NUMERIC(6,2),
+	international_takings NUMERIC(6,2)
+);
+
+
+-- Create books_authors table
+
+CREATE TABLE books_authors (
+	book_id INT REFERENCES books (id),
+	author_id INT REFERENCES authors (id),
+	PRIMARY KEY (id, id)
+);
+
+DROP TABLE books_authors;
+SELECT * FROM books_authors;
