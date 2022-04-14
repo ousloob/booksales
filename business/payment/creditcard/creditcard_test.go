@@ -1,7 +1,7 @@
 package creditcard_test
 
 import (
-	"booklib/payment/creditcard"
+	"booklib/business/payment/creditcard"
 	"testing"
 )
 

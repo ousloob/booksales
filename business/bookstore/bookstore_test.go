@@ -1,7 +1,7 @@
 package bookstore_test
 
 import (
-	"booklib/internal/bookstore"
+	"booklib/business/bookstore"
 	"sort"
 	"testing"
 
