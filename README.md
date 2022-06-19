@@ -1,2 +1,2 @@
-# Bookstore
-A project to manage a book store developed in Golang using go-chi.
+# bookstore
+Is an API to manage a bookstore.
