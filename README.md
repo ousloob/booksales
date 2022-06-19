@@ -1,2 +1,2 @@
-# Booklib
-A project to manage a book library developed in Golang
+# bookstore
+Is an API to manage a bookstore
