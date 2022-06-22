@@ -7,7 +7,7 @@ type Book struct {
 	ID          string    `json:"id"`           // Unique identifier.
 	Title       string    `json:"title"`        // Display title of the book.
 	Author      string    `json:"author"`       // Display the author of the book.
-	ISBN        int       `json:"isbn"`         //International Standard Book Number.
+	ISBN        int       `json:"isbn"`         // International Standard Book Number.
 	Cost        int       `json:"cost"`         // Price for one item in cents.
 	Quantity    int       `json:"quantity"`     // Original number of items available.
 	Sold        int       `json:"sold"`         // Aggregate field showing number of items sold.
