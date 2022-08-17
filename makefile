@@ -4,9 +4,17 @@ SHELL := /bin/bash
 
 # ==============================================================================
 # Module support
+
 tidy:
 	go mod tidy
 	go mod vendor
+
+# ==============================================================================
+# Running the API
+
+run:
+	go run app/services/shop-api/main.go
+
 
 # ==============================================================================
 # Running tests within the local computer
