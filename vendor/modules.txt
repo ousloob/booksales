@@ -1,3 +1,6 @@
+# github.com/ardanlabs/conf/v3 v3.1.2
+## explicit; go 1.13
+github.com/ardanlabs/conf/v3
 # github.com/ardanlabs/service v0.0.0-20220607185934-612eb640eb62
 ## explicit; go 1.18
 github.com/ardanlabs/service/foundation/logger
