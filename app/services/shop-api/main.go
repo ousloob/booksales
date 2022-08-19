@@ -75,6 +75,9 @@ func run(log *log.Logger) error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
+	// Construct the mux for the API calls.
+	// apiMux :=
+
 	// Construct a server to service the request against the mux.
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,
