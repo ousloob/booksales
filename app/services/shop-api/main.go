@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"expvar"
 	"fmt"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
+	"github.com/go-chi/chi/v5"
 )
 
 var build = "develop"
@@ -76,11 +78,12 @@ func run(log *log.Logger) error {
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
 	// Construct the mux for the API calls.
-	// apiMux :=
+	chiMux := chi.NewRouter()
 
 	// Construct a server to service the request against the mux.
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,
+		Handler:      chiMux,
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeOut,
 		IdleTimeout:  cfg.Web.IdleTimeout,
@@ -98,6 +101,29 @@ func run(log *log.Logger) error {
 		log.Printf("startup status api router started host %s", api.Addr)
 		serveErrors <- api.ListenAndServe()
 	}()
+
+	// =========================================================================
+	// Shutdown
+
+	// Blocking main and waiting for shutdown
+	select {
+	case err := <-serveErrors:
+		return fmt.Errorf("server error: %w", err)
+
+	case sig := <-shutdown:
+		log.Printf("shutdown status shutdown started signal %v", sig)
+		defer log.Printf("shutdown status shutdown complete signal %v", sig)
+
+		// give outstanding requests a deadline for completion.
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
+		defer cancel()
+
+		// Asking listener to shut down and shed load.
+		if err := api.Shutdown(ctx); err != nil {
+			api.Close()
+			return fmt.Errorf("could not stop server gracefully: %w", err)
+		}
+	}
 
 	return nil
 }
