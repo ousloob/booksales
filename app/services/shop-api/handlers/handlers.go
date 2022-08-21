@@ -2,12 +2,22 @@
 package handlers
 
 import (
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func App() {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+type APIMuxConfig struct {
+	Shutdown chan os.Signal
+	Log      *log.Logger
+}
 
+func APIMux(cfg APIMuxConfig) http.Handler {
+	app := chi.NewRouter()
+	app.Use(middleware.Logger)
+
+	return app
 }

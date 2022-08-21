@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"expvar"
 	"fmt"
 	"log"
@@ -12,7 +13,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
-	"github.com/go-chi/chi/v5"
+	"github.com/oussamm/bookstore/app/services/shop-api/handlers"
 )
 
 var build = "develop"
@@ -22,6 +23,7 @@ func main() {
 
 	// Perform the startup and shutdown sequence.
 	if err := run(log); err != nil {
+		log.Println("startup: error:", err)
 		os.Exit(1)
 	}
 }
@@ -48,8 +50,12 @@ func run(log *log.Logger) error {
 	}
 
 	const prefix = "SHOP"
-	_, err := conf.Parse(prefix, &cfg)
+	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
+		if errors.Is(err, conf.ErrHelpWanted) {
+			fmt.Println(help)
+			return nil
+		}
 		return fmt.Errorf("parsing config: %w", err)
 	}
 
@@ -70,7 +76,7 @@ func run(log *log.Logger) error {
 	// =========================================================================
 	// Start API Service
 
-	log.Print("startup status initalizing V1 API support")
+	log.Print("startup status: initalizing V1 API support")
 
 	// Make a channel to listen for an interrupt or terminal signal from the OS.
 	// Use a buffered channel because the signal package require it.
@@ -78,12 +84,17 @@ func run(log *log.Logger) error {
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
 	// Construct the mux for the API calls.
-	chiMux := chi.NewRouter()
+	apiMux := handlers.APIMux(
+		handlers.APIMuxConfig{
+			Shutdown: shutdown,
+			Log:      log,
+		},
+	)
 
 	// Construct a server to service the request against the mux.
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,
-		Handler:      chiMux,
+		Handler:      apiMux,
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeOut,
 		IdleTimeout:  cfg.Web.IdleTimeout,
@@ -98,7 +109,7 @@ func run(log *log.Logger) error {
 
 	// Start the service listening for api requests.
 	go func() {
-		log.Printf("startup status api router started host %s", api.Addr)
+		log.Printf("startup status: api router started host %s", api.Addr)
 		serveErrors <- api.ListenAndServe()
 	}()
 
@@ -111,8 +122,8 @@ func run(log *log.Logger) error {
 		return fmt.Errorf("server error: %w", err)
 
 	case sig := <-shutdown:
-		log.Printf("shutdown status shutdown started signal %v", sig)
-		defer log.Printf("shutdown status shutdown complete signal %v", sig)
+		log.Printf("shutdown status: shutdown started signal %v", sig)
+		defer log.Printf("shutdown status: shutdown complete signal %v", sig)
 
 		// give outstanding requests a deadline for completion.
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
