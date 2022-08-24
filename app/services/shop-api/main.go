@@ -14,6 +14,7 @@ import (
 
 	"github.com/ardanlabs/conf/v3"
 	"github.com/oussamm/bookstore/app/services/shop-api/handlers"
+	"github.com/oussamm/bookstore/business/sys/database"
 )
 
 var build = "develop"
@@ -41,6 +42,15 @@ func run(log *log.Logger) error {
 			IdleTimeout     time.Duration `conf:"default:12s"`
 			ShutdownTimeout time.Duration `conf:"default:20s"`
 			APIHost         string        `conf:"default:0.0.0.0:3000"`
+		}
+		DB struct {
+			User         string `conf:"default:oussama"`
+			Password     string `conf:"default:postgres"`
+			Host         string `conf:"default:localhost"`
+			Name         string `conf:"default:bookdb"`
+			MaxIdleConns int    `conf:"default:0"`
+			MaxOpenConns int    `conf:"default:0"`
+			DisableTLS   bool   `conf:"default:true"`
 		}
 	}{
 		Version: conf.Version{
@@ -72,6 +82,29 @@ func run(log *log.Logger) error {
 	log.Printf("startup config %s", out)
 
 	expvar.NewString("build").Set(build)
+
+	// =========================================================================
+	// Database Support
+
+	// Create connectivity to the database
+	log.Printf("startup status: initializing database support host")
+
+	db, err := database.Open(database.Config{
+		User:         cfg.DB.User,
+		Password:     cfg.DB.Password,
+		Host:         cfg.DB.Host,
+		Name:         cfg.DB.Name,
+		MaxIdleConns: cfg.DB.MaxIdleConns,
+		MaxOpenConns: cfg.DB.MaxOpenConns,
+		DisableTLS:   cfg.DB.DisableTLS,
+	})
+	if err != nil {
+		return fmt.Errorf("connect to do db: %w", err)
+	}
+	defer func() {
+		log.Printf("shutdown status: stopping database support host %s", cfg.DB.Host)
+		db.Close()
+	}()
 
 	// =========================================================================
 	// Start API Service
