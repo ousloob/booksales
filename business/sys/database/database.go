@@ -2,10 +2,16 @@
 package database
 
 import (
+	"errors"
 	"net/url"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // Calls init funciton.
+)
+
+// Set of error variables for CRUD operations.
+var (
+	ErrDBDuplicatedEntry = errors.New("duplicated entry")
 )
 
 // Config is the required properties to use the database.
