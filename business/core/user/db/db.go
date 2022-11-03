@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/oussamm/bookstore/vendor/github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx"
 )
 
 var ErrUniqueEmail = errors.New("email is not unique")

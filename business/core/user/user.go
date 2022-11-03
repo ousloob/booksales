@@ -11,7 +11,8 @@ import (
 	"github.com/oussamm/bookstore/business/core/user/db"
 	"github.com/oussamm/bookstore/business/sys/database"
 	"github.com/oussamm/bookstore/business/sys/validate"
-	"github.com/oussamm/bookstore/vendor/github.com/jmoiron/sqlx"
+
+	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
 
