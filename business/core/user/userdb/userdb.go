@@ -1,5 +1,5 @@
-// Package db contains user related CRUD functionality.
-package db
+// Package userdb contains user related CRUD functionality.
+package userdb
 
 import (
 	"context"

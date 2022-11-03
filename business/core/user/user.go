@@ -8,7 +8,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/oussamm/bookstore/business/core/user/db"
+	"github.com/oussamm/bookstore/business/core/user/userdb"
 	"github.com/oussamm/bookstore/business/sys/database"
 	"github.com/oussamm/bookstore/business/sys/validate"
 
@@ -18,12 +18,12 @@ import (
 
 // Core manages the set of APIs for user access.
 type Core struct {
-	store db.Store
+	store userdb.Store
 }
 
 func NewCore(log *log.Logger, sqlxDB *sqlx.DB) Core {
 	return Core{
-		store: db.NewStore(log, sqlxDB),
+		store: userdb.NewStore(log, sqlxDB),
 	}
 }
 
@@ -34,7 +34,7 @@ func (c Core) Create(ctx context.Context, nu NewUser, now time.Time) (User, erro
 		return User{}, fmt.Errorf("generating password hash: %w", err)
 	}
 
-	dbUser := db.User{
+	dbUser := userdb.User{
 		ID:           validate.GenerateID(),
 		Name:         nu.Name,
 		Email:        nu.Email,
@@ -46,7 +46,7 @@ func (c Core) Create(ctx context.Context, nu NewUser, now time.Time) (User, erro
 
 	if err := c.store.Create(ctx, dbUser); err != nil {
 		if errors.Is(err, database.ErrDBDuplicatedEntry) {
-			return User{}, fmt.Errorf("create: %w", db.ErrUniqueEmail)
+			return User{}, fmt.Errorf("create: %w", userdb.ErrUniqueEmail)
 		}
 	}
 
