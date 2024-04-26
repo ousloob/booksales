@@ -1,6 +1,6 @@
 module github.com/oussamm/bookstore
 
-go 1.19
+go 1.22.2
 
 require (
 	github.com/ardanlabs/conf/v3 v3.1.2
