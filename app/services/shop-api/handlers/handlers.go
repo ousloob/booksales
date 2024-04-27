@@ -2,7 +2,7 @@
 package handlers
 
 import (
-	"log"
+	"log/slog"
 	"os"
 
 	"github.com/go-chi/chi/v5"
@@ -12,7 +12,7 @@ import (
 
 type APIMuxConfig struct {
 	Shutdown chan os.Signal
-	Log      *log.Logger
+	Log      *slog.Logger
 }
 
 func APIMux(cfg APIMuxConfig) *chi.Mux {

@@ -3,14 +3,14 @@
 package v1
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type Config struct {
-	Log *log.Logger
+	Log *slog.Logger
 }
 
 // Routes binds all the version 1 routes.

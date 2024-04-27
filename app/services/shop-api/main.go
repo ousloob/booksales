@@ -5,7 +5,7 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,16 +20,17 @@ import (
 var build = "develop"
 
 func main() {
-	log := log.New(os.Stdout, "SHOP-API: ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	// Perform the startup and shutdown sequence.
-	if err := run(log); err != nil {
-		log.Println("startup: error:", err)
+	ctx := context.Background()
+
+	if err := run(ctx, log); err != nil {
+		log.ErrorContext(ctx, "startup", "msg", err)
 		os.Exit(1)
 	}
 }
 
-func run(log *log.Logger) error {
+func run(ctx context.Context, log *slog.Logger) error {
 
 	// =========================================================================
 	// Configuration
@@ -72,22 +73,21 @@ func run(log *log.Logger) error {
 	// =========================================================================
 	// App Starting
 
-	log.Printf("starting service version %s", build)
-	defer log.Println("shutdown complete")
+	log.InfoContext(ctx, "starting service", "version", cfg.Build)
+	defer log.InfoContext(ctx, "shutdown complete")
 
 	out, err := conf.String(&cfg)
 	if err != nil {
 		return fmt.Errorf("generating config for output: %w", err)
 	}
-	log.Printf("startup config %s", out)
+	log.InfoContext(ctx, "startup", "config ", out)
 
 	expvar.NewString("build").Set(build)
 
 	// =========================================================================
 	// Database Support
 
-	// Create connectivity to the database
-	log.Printf("startup status: initializing database support host")
+	log.InfoContext(ctx, "startup", "status", "initalizing database support", "hostport", cfg.DB.Host)
 
 	db, err := database.Open(database.Config{
 		User:         cfg.DB.User,
@@ -102,14 +102,13 @@ func run(log *log.Logger) error {
 		return fmt.Errorf("connect to do db: %w", err)
 	}
 	defer func() {
-		log.Printf("shutdown status: stopping database support host %s", cfg.DB.Host)
 		db.Close()
 	}()
 
 	// =========================================================================
 	// Start API Service
 
-	log.Print("startup status: initalizing V1 API support")
+	log.InfoContext(ctx, "startup", "status", "initializing V1 API support")
 
 	// Make a channel to listen for an interrupt or terminal signal from the OS.
 	// Use a buffered channel because the signal package require it.
@@ -131,7 +130,7 @@ func run(log *log.Logger) error {
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeOut,
 		IdleTimeout:  cfg.Web.IdleTimeout,
-		ErrorLog:     log,
+		ErrorLog:     slog.NewLogLogger(log.Handler(), slog.Level(slog.LevelError)),
 	}
 
 	// Make a channel to listen for errors coming from the listener. Use a
@@ -142,7 +141,7 @@ func run(log *log.Logger) error {
 
 	// Start the service listening for api requests.
 	go func() {
-		log.Printf("startup status: api router started host %s", api.Addr)
+		log.InfoContext(ctx, "startup", "status", "api router started", "host", api.Addr)
 		serveErrors <- api.ListenAndServe()
 	}()
 
@@ -155,8 +154,8 @@ func run(log *log.Logger) error {
 		return fmt.Errorf("server error: %w", err)
 
 	case sig := <-shutdown:
-		log.Printf("shutdown status: shutdown started signal %v", sig)
-		defer log.Printf("shutdown status: shutdown complete signal %v", sig)
+		log.InfoContext(ctx, "shutdown", "status", "shutdown started", "signal", sig)
+		defer log.InfoContext(ctx, "shutdown", "status", "shutdown complete", "signal", sig)
 
 		// give outstanding requests a deadline for completion.
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
