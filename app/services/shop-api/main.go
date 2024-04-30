@@ -15,12 +15,13 @@ import (
 	"github.com/ardanlabs/conf/v3"
 	"github.com/oussamm/bookstore/app/services/shop-api/handlers"
 	"github.com/oussamm/bookstore/business/sys/database"
+	"github.com/oussamm/bookstore/foundation/logger"
 )
 
 var build = "develop"
 
 func main() {
-	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	log := logger.New(os.Stdout, "SHOP", build)
 
 	ctx := context.Background()
 
