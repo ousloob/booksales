@@ -14,7 +14,7 @@ import (
 
 	"github.com/ardanlabs/conf/v3"
 	"github.com/lmittmann/tint"
-	"github.com/oussamm/bookstore/app/services/shop-api/handlers"
+	"github.com/oussamm/bookstore/app/services/sales-api/handlers"
 	"github.com/oussamm/bookstore/business/sys/database"
 )
 
@@ -25,7 +25,7 @@ func main() {
 	log := slog.New(tint.NewHandler(os.Stderr, &tint.Options{
 		AddSource:  true,
 		Level:      slog.LevelDebug,
-		TimeFormat: time.Kitchen,
+		TimeFormat: time.TimeOnly,
 	}))
 
 	ctx := context.Background()
@@ -66,7 +66,7 @@ func run(ctx context.Context, log *slog.Logger) error {
 		},
 	}
 
-	const prefix = "SHOP"
+	const prefix = "SALES"
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {

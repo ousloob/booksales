@@ -13,7 +13,7 @@ tidy:
 # Running the API
 
 run:
-	go run app/services/shop-api/main.go
+	go run app/services/sales-api/main.go
 
 
 # ==============================================================================

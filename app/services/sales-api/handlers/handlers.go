@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	v1 "github.com/oussamm/bookstore/app/services/shop-api/handlers/v1"
+	v1 "github.com/oussamm/bookstore/app/services/sales-api/handlers/v1"
 )
 
 type APIMuxConfig struct {
