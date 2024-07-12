@@ -13,15 +13,20 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
+	"github.com/lmittmann/tint"
 	"github.com/oussamm/bookstore/app/services/shop-api/handlers"
 	"github.com/oussamm/bookstore/business/sys/database"
-	"github.com/oussamm/bookstore/foundation/logger"
 )
 
 var build = "develop"
 
 func main() {
-	log := logger.New(os.Stdout, "SHOP", build)
+	// create a new logger
+	log := slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+		AddSource:  true,
+		Level:      slog.LevelDebug,
+		TimeFormat: time.Kitchen,
+	}))
 
 	ctx := context.Background()
 
