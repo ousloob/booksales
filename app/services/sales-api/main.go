@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
-	"expvar"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -21,15 +19,13 @@ import (
 var build = "develop"
 
 func main() {
-	// create a new logger
 	log := slog.New(tint.NewHandler(os.Stderr, &tint.Options{
 		AddSource:  true,
 		Level:      slog.LevelDebug,
 		TimeFormat: time.TimeOnly,
-	}))
+	})).With("API", "SALES")
 
 	ctx := context.Background()
-
 	if err := run(ctx, log); err != nil {
 		log.ErrorContext(ctx, "startup", "msg", err)
 		os.Exit(1)
@@ -66,29 +62,17 @@ func run(ctx context.Context, log *slog.Logger) error {
 		},
 	}
 
-	const prefix = "SALES"
-	help, err := conf.Parse(prefix, &cfg)
-	if err != nil {
-		if errors.Is(err, conf.ErrHelpWanted) {
-			fmt.Println(help)
-			return nil
-		}
-		return fmt.Errorf("parsing config: %w", err)
-	}
-
 	// =========================================================================
 	// App Starting
 
-	log.InfoContext(ctx, "starting service", "version", cfg.Build)
+	log.InfoContext(ctx, "starting service", "environment", cfg.Build)
 	defer log.InfoContext(ctx, "shutdown complete")
 
-	out, err := conf.String(&cfg)
-	if err != nil {
-		return fmt.Errorf("generating config for output: %w", err)
+	if _, err := conf.Parse(cfg.Build, cfg); err != nil {
+		return fmt.Errorf("parse conf: %w", err)
 	}
-	log.InfoContext(ctx, "startup", "config ", out)
 
-	expvar.NewString("build").Set(build)
+	log.InfoContext(ctx, "startup", "config ", cfg)
 
 	// =========================================================================
 	// Database Support
@@ -107,6 +91,7 @@ func run(ctx context.Context, log *slog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("connect to do db: %w", err)
 	}
+
 	defer func() {
 		db.Close()
 	}()
