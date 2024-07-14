@@ -12,22 +12,22 @@ import (
 
 var ErrUniqueEmail = errors.New("email is not unique")
 
-// Store manages the set of APIs for user access.
-type Store struct {
+// Bus manages the set of APIs for user access.
+type Bus struct {
 	log *log.Logger
 	db  *sqlx.DB
 }
 
-// NewStore constructs a data for api access.
-func NewStore(log *log.Logger, db *sqlx.DB) Store {
-	return Store{
+// NewBus constructs a data for api access.
+func NewBus(log *log.Logger, db *sqlx.DB) *Bus {
+	return &Bus{
 		log: log,
 		db:  db,
 	}
 }
 
 // Create inserts a new user into the database.
-func (s Store) Create(ctx context.Context, usr User) error {
+func (b *Bus) Create(ctx context.Context, usr User) error {
 	const q = `
 	INSERT into users (
         user_id,
@@ -48,7 +48,7 @@ func (s Store) Create(ctx context.Context, usr User) error {
         date_updated
     )`
 
-	if _, err := sqlx.NamedExecContext(ctx, s.db, q, usr); err != nil {
+	if _, err := sqlx.NamedExecContext(ctx, b.db, q, usr); err != nil {
 		return fmt.Errorf("inserting user: %w", err)
 	}
 

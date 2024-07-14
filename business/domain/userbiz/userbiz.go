@@ -1,5 +1,5 @@
-// Package user provides a functionality of a core business API for user.
-package user
+// Package userbiz provides a functionality of a core business API for user.
+package userbiz
 
 import (
 	"context"
@@ -8,27 +8,26 @@ import (
 	"log"
 	"time"
 
-	"github.com/oussamm/bookstore/business/core/user/userdb"
+	"github.com/jmoiron/sqlx"
+	"github.com/oussamm/bookstore/business/domain/userbiz/userdb"
 	"github.com/oussamm/bookstore/business/sys/database"
 	"github.com/oussamm/bookstore/business/sys/validate"
-
-	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Core manages the set of APIs for user access.
-type Core struct {
-	store userdb.Store
+// Bus manages the set of APIs for user access.
+type Bus struct {
+	store *userdb.Bus
 }
 
-func NewCore(log *log.Logger, sqlxDB *sqlx.DB) Core {
-	return Core{
-		store: userdb.NewStore(log, sqlxDB),
+func NewCore(log *log.Logger, sqlxDB *sqlx.DB) *Bus {
+	return &Bus{
+		store: userdb.NewBus(log, sqlxDB),
 	}
 }
 
 // Create inserts a new user into the database.
-func (c Core) Create(ctx context.Context, nu NewUser, now time.Time) (User, error) {
+func (b *Bus) Create(ctx context.Context, nu NewUser, now time.Time) (User, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(nu.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return User{}, fmt.Errorf("generating password hash: %w", err)
@@ -44,7 +43,7 @@ func (c Core) Create(ctx context.Context, nu NewUser, now time.Time) (User, erro
 		DateUpdated:  now,
 	}
 
-	if err := c.store.Create(ctx, dbUser); err != nil {
+	if err := b.store.Create(ctx, dbUser); err != nil {
 		if errors.Is(err, database.ErrDBDuplicatedEntry) {
 			return User{}, fmt.Errorf("create: %w", userdb.ErrUniqueEmail)
 		}

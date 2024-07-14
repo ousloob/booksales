@@ -7,12 +7,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
 	"github.com/lmittmann/tint"
-	"github.com/oussamm/bookstore/app/services/sales-api/handlers"
+	"github.com/oussamm/bookstore/api/sales/routing"
 	"github.com/oussamm/bookstore/business/sys/database"
 )
 
@@ -33,6 +34,11 @@ func main() {
 }
 
 func run(ctx context.Context, log *slog.Logger) error {
+
+	// =========================================================================
+	// GOMAXPROCS
+
+	log.InfoContext(ctx, "startup", "GOMAXPROCS", runtime.GOMAXPROCS(0))
 
 	// =========================================================================
 	// Configuration
@@ -68,7 +74,7 @@ func run(ctx context.Context, log *slog.Logger) error {
 	log.InfoContext(ctx, "starting service", "environment", cfg.Build)
 	defer log.InfoContext(ctx, "shutdown complete")
 
-	if _, err := conf.Parse(cfg.Build, cfg); err != nil {
+	if _, err := conf.Parse(cfg.Build, &cfg); err != nil {
 		return fmt.Errorf("parse conf: %w", err)
 	}
 
@@ -107,8 +113,8 @@ func run(ctx context.Context, log *slog.Logger) error {
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
 	// Construct the mux for the API calls.
-	apiMux := handlers.APIMux(
-		handlers.APIMuxConfig{
+	apiMux := routing.APIMux(
+		routing.Bus{
 			Shutdown: shutdown,
 			Log:      log,
 		},
