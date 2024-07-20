@@ -13,8 +13,7 @@ tidy:
 # Running the API
 
 run:
-	go run app/services/sales-api/main.go
-
+	go run api/sales/main.go
 
 # ==============================================================================
 # Running tests within the local computer

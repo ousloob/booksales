@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	v1 "github.com/oussamm/bookstore/api/sales/routing/v1"
+	"github.com/oussamm/bookstore/support/web/mid"
 )
 
 // Bus carries shared resources across the application.
@@ -18,8 +18,9 @@ type Bus struct {
 
 // APIMux constructs and returns the API Router.
 func APIMux(bus Bus) *chi.Mux {
+
 	mux := chi.NewRouter()
-	mux.Use(middleware.Logger)
+	mux.Use(mid.Logger(bus.Log))
 
 	v1.Routes(mux, v1.Bus{
 		Log: bus.Log,

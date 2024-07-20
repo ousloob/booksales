@@ -23,7 +23,7 @@ func main() {
 	log := slog.New(tint.NewHandler(os.Stderr, &tint.Options{
 		AddSource:  true,
 		Level:      slog.LevelDebug,
-		TimeFormat: time.TimeOnly,
+		TimeFormat: time.DateTime,
 	})).With("API", "SALES")
 
 	ctx := context.Background()
@@ -78,7 +78,7 @@ func run(ctx context.Context, log *slog.Logger) error {
 		return fmt.Errorf("parse conf: %w", err)
 	}
 
-	log.InfoContext(ctx, "startup", "config ", cfg)
+	log.InfoContext(ctx, "startup", "config", cfg)
 
 	// =========================================================================
 	// Database Support

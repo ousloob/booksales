@@ -1,23 +1,33 @@
 package mid
 
 import (
-	"context"
+	"log/slog"
 	"net/http"
+	"time"
+
+	"github.com/go-chi/chi/v5/middleware"
 )
 
-// Logger provide the logging middleware.
-func Logger(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// create new context from `r` request context, and assign key `"user"`
-		// to value of `"123"`
-		ctx := context.WithValue(r.Context(), "user", "123")
+func Logger(log *slog.Logger) func(next http.Handler) http.Handler {
+	f := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
-		// call the next handler in the chain, passing the response writer and
-		// the updated request object with the new context value.
-		//
-		// note: context.Context values are nested, so any previously set
-		// values will be accessible as well, and the new `"user"` key
-		// will be accessible from this point forward.
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+			defer func() {
+				log.Info("HTTP request",
+					"method", r.Method,
+					"path", r.URL.Path,
+					"status", ww.Status(),
+					"bytes", ww.BytesWritten(),
+					"duration", time.Since(start),
+					"remoteaddr", r.RemoteAddr,
+				)
+			}()
+
+			next.ServeHTTP(ww, r)
+		})
+	}
+
+	return f
 }
