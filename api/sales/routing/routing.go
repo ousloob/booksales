@@ -2,7 +2,6 @@
 package routing
 
 import (
-	"log/slog"
 	"os"
 
 	"github.com/go-chi/chi/v5"
@@ -12,7 +11,6 @@ import (
 
 // Bus carries shared resources across the application.
 type Bus struct {
-	Log      *slog.Logger
 	Shutdown chan os.Signal
 }
 
@@ -20,11 +18,9 @@ type Bus struct {
 func APIMux(bus Bus) *chi.Mux {
 
 	mux := chi.NewRouter()
-	mux.Use(mid.Logger(bus.Log))
+	mux.Use(mid.Logger)
 
-	v1.Routes(mux, v1.Bus{
-		Log: bus.Log,
-	})
+	v1.Routes(mux, v1.Bus{})
 
 	return mux
 }
