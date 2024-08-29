@@ -26,21 +26,19 @@ func main() {
 		TimeFormat: time.DateTime,
 	})).With("API", "SALES")
 
-	slog.SetDefault(logger)
-
 	ctx := context.Background()
-	if err := run(ctx); err != nil {
-		slog.ErrorContext(ctx, "startup", "msg", err)
+	if err := run(ctx, logger); err != nil {
+		logger.ErrorContext(ctx, "startup", "msg", err)
 		os.Exit(1)
 	}
 }
 
-func run(ctx context.Context) error {
+func run(ctx context.Context, log *slog.Logger) error {
 
 	// =========================================================================
 	// GOMAXPROCS
 
-	slog.InfoContext(ctx, "startup", "GOMAXPROCS", runtime.GOMAXPROCS(0))
+	log.InfoContext(ctx, "startup", "GOMAXPROCS", runtime.GOMAXPROCS(0))
 
 	// =========================================================================
 	// Configuration
@@ -73,19 +71,19 @@ func run(ctx context.Context) error {
 	// =========================================================================
 	// App Starting
 
-	slog.InfoContext(ctx, "starting service", "environment", cfg.Build)
-	defer slog.InfoContext(ctx, "shutdown complete")
+	log.InfoContext(ctx, "starting service", "environment", cfg.Build)
+	defer log.InfoContext(ctx, "shutdown complete")
 
 	if _, err := conf.Parse(cfg.Build, &cfg); err != nil {
 		return fmt.Errorf("parse conf: %w", err)
 	}
 
-	slog.InfoContext(ctx, "startup", "config", cfg)
+	log.InfoContext(ctx, "startup", "config", cfg)
 
 	// =========================================================================
 	// Database Support
 
-	slog.InfoContext(ctx, "startup", "status", "initalizing database support", "hostport", cfg.DB.Host)
+	log.InfoContext(ctx, "startup", "status", "initalizing database support", "hostport", cfg.DB.Host)
 
 	db, err := database.Open(database.Config{
 		User:         cfg.DB.User,
@@ -107,7 +105,7 @@ func run(ctx context.Context) error {
 	// =========================================================================
 	// Start API Service
 
-	slog.InfoContext(ctx, "startup", "status", "initializing V1 API support")
+	log.InfoContext(ctx, "startup", "status", "initializing V1 API support")
 
 	// Make a channel to listen for an interrupt or terminal signal from the OS.
 	// Use a buffered channel because the signal package require it.
@@ -128,7 +126,7 @@ func run(ctx context.Context) error {
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeOut,
 		IdleTimeout:  cfg.Web.IdleTimeout,
-		ErrorLog:     slog.NewLogLogger(slog.Default().Handler(), slog.LevelError),
+		ErrorLog:     slog.NewLogLogger(log.Handler(), slog.LevelError),
 	}
 
 	// Make a channel to listen for errors coming from the listener. Use a
@@ -139,7 +137,7 @@ func run(ctx context.Context) error {
 
 	// Start the service listening for api requests.
 	go func() {
-		slog.InfoContext(ctx, "startup", "status", "api router started", "host", api.Addr)
+		log.InfoContext(ctx, "startup", "status", "api router started", "host", api.Addr)
 		serveErrors <- api.ListenAndServe()
 	}()
 
@@ -152,8 +150,8 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("server error: %w", err)
 
 	case sig := <-shutdown:
-		slog.InfoContext(ctx, "shutdown", "status", "shutdown started", "signal", sig)
-		defer slog.InfoContext(ctx, "shutdown", "status", "shutdown complete", "signal", sig)
+		log.InfoContext(ctx, "shutdown", "status", "shutdown started", "signal", sig)
+		defer log.InfoContext(ctx, "shutdown", "status", "shutdown complete", "signal", sig)
 
 		// give outstanding requests a deadline for completion.
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
