@@ -1,4 +1,4 @@
-module github.com/oussamm/bookstore
+module github.com/oussamm/booksales
 
 go 1.23
 

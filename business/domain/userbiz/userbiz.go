@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/oussamm/bookstore/business/domain/userbiz/userdb"
-	"github.com/oussamm/bookstore/business/sys/database"
-	"github.com/oussamm/bookstore/business/sys/validate"
+	"github.com/oussamm/booksales/business/domain/userbiz/userdb"
+	"github.com/oussamm/booksales/business/sys/database"
+	"github.com/oussamm/booksales/business/sys/validate"
 	"golang.org/x/crypto/bcrypt"
 )
 
