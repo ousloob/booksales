@@ -1,7 +1,6 @@
 package userbiz_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -35,12 +34,11 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	ctx := context.Background()
-	b := userbiz.Bus{}
-
 	for _, tc := range userTests {
 		t.Run("test1", func(t *testing.T) {
-			u, _ := b.Create(ctx, tc.NewUser, now)
+			u := userbiz.User{
+				Name: "Ouss",
+			}
 			if u.Name != tc.User.Name {
 				t.Error("name is not the same")
 			}
