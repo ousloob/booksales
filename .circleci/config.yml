@@ -26,8 +26,7 @@ jobs:
           name: Run tests
           command: |
             mkdir -p /tmp/test-reports
-            gotestsum --junitfile /tmp/test-reports/unit-tests.xml
-            CGO_ENABLED=0 go test ./...
+            gotestsum --junitfile /tmp/test-reports/unit-tests.xml -- -v ./...
       - store_test_results:
           path: /tmp/test-reports
   
