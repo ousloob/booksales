@@ -16,15 +16,24 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
+      
+  test:
+    docker:
+      - image: cimg/go:1.21
+    steps:
+      - checkout
       - run:
           name: Run tests
-          command: |
+          command: /
             mkdir -p /tmp/test-reports
             gotestsum --junitfile /tmp/test-reports/unit-tests.xml
+            CGO_ENABLED=0 go test ./...
       - store_test_results:
           path: /tmp/test-reports
+  
 
 workflows:
-  sample:
+  build_and_test:
     jobs:
       - build
+      - test
