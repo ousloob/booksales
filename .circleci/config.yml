@@ -24,7 +24,7 @@ jobs:
       - checkout
       - run:
           name: Run tests
-          command: /
+          command: |
             mkdir -p /tmp/test-reports
             gotestsum --junitfile /tmp/test-reports/unit-tests.xml
             CGO_ENABLED=0 go test ./...
