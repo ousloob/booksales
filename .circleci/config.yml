@@ -29,11 +29,11 @@ jobs:
       - run:
           name: Run tests
           command: |
-            gotestsum --junitfile /tmp/artifacts/unit-tests.xml --format standard-verbose ./...
+            gotestsum --junitfile /tmp/artifacts/unit-tests.xml ./...
       - store_test_results:
-          path: /artifacts/test-reports
+          path: /tmp/artifacts/test-reports
       - store_artifacts:
-         path: /artifacts/test-reports
+         path: /tmp/artifacts/test-reports
   
 
 workflows:
