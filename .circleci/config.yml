@@ -31,9 +31,9 @@ jobs:
           command: |
             gotestsum --junitfile /tmp/artifacts/unit-tests.xml ./...
       - store_test_results:
-          path: /tmp/artifacts/test-reports
+          path: /tmp/artifacts/test-reports.xml
       - store_artifacts:
-         path: /tmp/artifacts/test-reports
+         path: /tmp/artifacts/test-reports.xml
   
 
 workflows:
