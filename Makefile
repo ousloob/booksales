@@ -1,5 +1,13 @@
 SHELL := /bin/sh
 
+# ==============================================================================	
+# Module support
+
+.PHONY: tidy
+tidy:
+	go mod tidy
+	go mod vendor
+
 # ==============================================================================
 # Running the API locally
 
@@ -8,27 +16,21 @@ run:
 	go run api/sales/main.go
 
 # ==============================================================================
-# Running tests locally
+# Code quality check locally
 
-.PHONY: lint
-lint:
-	CGO_ENABLED=0 go vet ./...
-	staticcheck -checks=all ./...
-	
-.PHONY: test
+.PHONY: test lint vulncheck check
+
+# Run all checks
+check: test lint vulncheck
+
 test:
 	go test -count=1 ./...
 
-.PHONY: vulncheck
+lint:
+	CGO_ENABLED=0 go vet ./...
+	staticcheck -checks=all ./...
+
 vulncheck:
 	govulncheck ./...
-
-# ==============================================================================	
-# Module support
-
-.PHONY: tidy
-tidy:
-	go mod tidy
-	go mod vendor
 
 # ==============================================================================
