@@ -29,9 +29,9 @@ jobs:
       - run:
           name: Run tests
           command: |
-            gotestsum --junitfile /tmp/artifacts/unit-tests.xml ./...
+            gotestsum --jsonfile /tmp/artifacts/unit-tests.json ./...
       - store_test_results:
-          path: /tmp/artifacts/unit-tests.xml
+          path: /tmp/artifacts/unit-tests.json
       - store_artifacts:
           path: /tmp/artifacts
   
