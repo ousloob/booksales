@@ -29,9 +29,11 @@ jobs:
       - run:
           name: Run tests
           command: |
-            gotestsum --jsonfile /tmp/artifacts/unit-tests.json ./...
+            gotestsum --junitfile /tmp/artifacts/unit-tests.xml \
+            -- -coverprofile=/tmp/artifacts/coverage.out ./... \
+            go tool cover -html=/tmp/artifacts/coverage.out -o /tmp/artifacts/coverage.html
       - store_test_results:
-          path: /tmp/artifacts/unit-tests.json
+          path: /tmp/artifacts/unit-tests.xml
       - store_artifacts:
           path: /tmp/artifacts
   
