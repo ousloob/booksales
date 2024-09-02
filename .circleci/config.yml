@@ -33,7 +33,7 @@ jobs:
       - store_test_results:
           path: /tmp/artifacts/test-reports.xml
       - store_artifacts:
-         path: /tmp/artifacts/test-reports.xml
+          path: /tmp/artifacts/test-reports.xml
   
 
 workflows:
