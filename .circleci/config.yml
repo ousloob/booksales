@@ -48,7 +48,9 @@ jobs:
           command: CGO_ENABLED=0 go vet ./...
       - run:
           name: Run staticcheck
-          command: staticccheck -checks=all ./...
+          command: |
+            go install honnef.co/go/tools/cmd/staticcheck@latest
+            staticccheck -checks=all ./...
 
   vulncheck:
     docker:
@@ -56,7 +58,9 @@ jobs:
     steps:
       - run:
           name: Run govulncheck
-          command: govulncheck ./...
+          command: |
+            go install golang.org/x/vuln/cmd/govulncheck@latest
+            govulncheck ./...
 
 workflows:
   build-test-check:
