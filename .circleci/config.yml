@@ -21,7 +21,6 @@ jobs:
     docker:
       - image: cimg/go:1.21
     steps:
-      - checkout
       - run:
           name: "Create a temp directory for artifacts and test results"
           command: |
@@ -38,11 +37,31 @@ jobs:
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
-          path: /tmp/artifacts
+          path: /tmp/artifacts  
   
+  lint:
+    docker:
+      - image: cimg/go:1.21
+    steps:
+      - run:
+          name: Run vet
+          command: CGO_ENABLED=0 go vet ./...
+      - run:
+          name: Run staticcheck
+          command: staticccheck -checks=all ./...
+
+  vulncheck:
+    docker:
+      - image: cimg/go:1.21
+    steps:
+      - run:
+          name: Run govulncheck
+          command: govulncheck ./...
 
 workflows:
-  build_and_test:
+  build-test-check:
     jobs:
       - build
       - test
+      - lint
+      - vulncheck
