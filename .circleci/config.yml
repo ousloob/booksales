@@ -1,9 +1,9 @@
 version: 2.1
 
 jobs:
-  build:
+  build-test-check:
     docker:
-      - image: cimg/go:1.21
+      - image: golang:1.21-alpine
     steps:
       - checkout
       - restore_cache:
@@ -16,11 +16,6 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-      
-  test:
-    docker:
-      - image: cimg/go:1.21
-    steps:
       - run:
           name: "Create a temp directory for artifacts and test results"
           command: |
@@ -37,27 +32,22 @@ jobs:
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
-          path: /tmp/artifacts  
-  
-  code-quality:
-    docker:
-      - image: cimg/go:1.21
-    steps:
+          path: /tmp/artifacts
       - run:
           name: Run vet
           command: CGO_ENABLED=0 go vet ./...
       - run:
           name: Run staticcheck
           command: |
-            go run honnef.co/go/tools/cmd/staticcheck@latest -checks=all ./...
+            go install honnef.co/go/tools/cmd/staticcheck@latest \
+            staticcheck -checks=all ./...
       - run:
           name: Run govulncheck
           command: |
-            go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+            go install golang.org/x/vuln/cmd/govulncheck@latest \
+            govulncheck ./...
 
 workflows:
-  build-test-and-code-quality:
+  build:
     jobs:
-      - build
-      - test
-      - code-quality
+      - build-test-check
