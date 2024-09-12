@@ -39,13 +39,11 @@ jobs:
       - run:
           name: Run staticcheck
           command: |
-            go install honnef.co/go/tools/cmd/staticcheck@latest \
-            staticcheck -checks=all ./...
+            go run honnef.co/go/tools/cmd/staticcheck@latest -checks=all ./...
       - run:
           name: Run govulncheck
           command: |
-            go install golang.org/x/vuln/cmd/govulncheck@latest \
-            govulncheck ./...
+            go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 
 workflows:
   build:
