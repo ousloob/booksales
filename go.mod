@@ -1,6 +1,6 @@
-module github.com/oussamm/booksales
+module github.com/lubbyte/booksales
 
-go 1.23.1
+go 1.23.3
 
 require (
 	github.com/ardanlabs/conf/v3 v3.1.2
