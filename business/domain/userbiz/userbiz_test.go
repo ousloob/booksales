@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/oussamm/booksales/business/domain/userbiz"
-	"github.com/oussamm/booksales/business/sys/validate"
+	"github.com/lubbyte/booksales/business/domain/userbiz"
+	"github.com/lubbyte/booksales/business/sys/validate"
 )
 
 func TestCreate(t *testing.T) {
