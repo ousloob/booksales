@@ -1,8 +1,8 @@
 # Booksales
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/lubbyte/booksales/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/lubbyte/booksales/tree/main)
-[![Go Report Card](https://goreportcard.com/badge/github.com/lubbyte/booksales)](https://goreportcard.com/report/github.com/lubbyte/bookssales)
-[![go.mod Go version](https://img.shields.io/github/go-mod/go-version/lubbyte/booksales)](https://github.com/lubbyte/booksales)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/ousloob/booksales/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/ousloob/booksales/tree/main)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ousloob/booksales)](https://goreportcard.com/report/github.com/ousloob/bookssales)
+[![go.mod Go version](https://img.shields.io/github/go-mod/go-version/ousloob/booksales)](https://github.com/ousloob/booksales)
 
 This Go-based API serves as a standard example for managing book sales. It provides a robust and efficient solution for tracking and processing book sales transactions.
 

@@ -1,4 +1,4 @@
-module github.com/lubbyte/booksales
+module ousloob.io/booksales
 
 go 1.23.3
 

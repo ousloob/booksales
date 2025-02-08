@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/lubbyte/booksales/business/domain/userbiz/userdb"
-	"github.com/lubbyte/booksales/business/sys/database"
-	"github.com/lubbyte/booksales/business/sys/validate"
 	"golang.org/x/crypto/bcrypt"
+	"ousloob.io/booksales/business/domain/userbiz/userdb"
+	"ousloob.io/booksales/business/sys/database"
+	"ousloob.io/booksales/business/sys/validate"
 )
 
 // Bus manages the set of APIs for user access.
