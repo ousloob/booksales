@@ -1,6 +1,6 @@
 module ousloob.io/booksales
 
-go 1.23.3
+go 1.23.6
 
 require (
 	github.com/ardanlabs/conf/v3 v3.1.2

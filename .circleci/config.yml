@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-test-check:
     docker:
-      - image: cimg/go:1.23.3
+      - image: cimg/go:1.23.6
     steps:
       - checkout
       - restore_cache:
@@ -17,7 +17,7 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
-          name: "Create a temp directory for artifacts and test results"
+          name: Create a temp directory for artifacts
           command: |
             mkdir -p /tmp/artifacts
             mkdir -p /tmp/test_results
