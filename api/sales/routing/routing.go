@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
-	v1 "ousloob.io/booksales/api/sales/routing/v1"
-	"ousloob.io/booksales/support/web/mid"
+	v1 "github.com/ousloob/booksales/api/sales/routing/v1"
+	"github.com/ousloob/booksales/support/web/mid"
 )
 
 // Bus carries shared resources across the application.

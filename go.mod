@@ -1,4 +1,4 @@
-module ousloob.io/booksales
+module github.com/ousloob/booksales
 
 go 1.23.6
 
