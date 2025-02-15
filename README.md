@@ -1,7 +1,7 @@
 # **BookSales**
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/ousloob/booksales/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/ousloob/booksales/tree/main)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ousloob/booksales)](https://goreportcard.com/report/github.com/ousloob/bookssales)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ousloob/booksales)](https://goreportcard.com/report/github.com/ousloob/booksales)
 [![go.mod Go version](https://img.shields.io/github/go-mod/go-version/ousloob/booksales)](https://github.com/ousloob/booksales)
 [![GitHub License](https://img.shields.io/github/license/ousloob/booksales)](https://github.com/ousloob/booksales/tree/main?tab=MIT-1-ov-file)
 
